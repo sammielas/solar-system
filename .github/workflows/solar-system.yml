@@ -15,15 +15,6 @@ env:
 jobs:
     unit-testing:
         name: Unit Testing
-        services:
-          mongo-db:
-            image: siddharth67/mongo-db:non-prod
-            ports:
-              - 27017:27017
-        env:
-           MONGO URI: 'mongodb://localhost:27017/superData'
-           MONGO_USERNAME: non-prod-user 
-           MONGO_PASSWORD: non-prod-password
         strategy:
             matrix:
                  nodejs_version: [18, 20]
@@ -40,17 +31,6 @@ jobs:
           uses: actions/setup-node@v3
           with:
             node-version: ${{ matrix.nodejs_version }}
-        - name: Set up Docker Buildx
-          if: matrix.operating_system == 'ubuntu-latest' # Only run if the OS is Ubuntu
-          uses: docker/setup-buildx-action@v2
-    
-        - name: Start Docker Service
-          if: matrix.operating_system == 'ubuntu-latest' 
-          run: |
-            sudo apt-get update
-            sudo apt-get install -y docker.io
-            sudo systemctl start docker
-            sudo systemctl enable docker
            
         - name: Cache NPM dependencies
           uses: actions/cache@v3
@@ -60,7 +40,7 @@ jobs:
         
         - name: Install Dependencies
           run: npm install
-    
+          
         - name: Unit Testing
           run: npm test
           
@@ -69,6 +49,7 @@ jobs:
           with:
             name: Mocha-Test-Result
             path: test-results.xml
+
 
     code-coverage:
           name: Code Coverage 
